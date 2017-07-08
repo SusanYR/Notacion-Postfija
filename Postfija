@@ -1,0 +1,90 @@
+#include <iostream>
+#include <string>
+#include <stack>
+#define simb 6
+
+using namespace std;
+
+const string oper[simb] = {"+", "-", "*", "/", "%", "^"};
+int ante[simb] = {1, 1, 2, 2, 2, 3};
+bool operador( const string );
+int anterior( const string );
+
+bool operador( const string aux )
+{
+	for ( int i = 0; i < simb; i++ )
+    if ( oper[i] == aux )
+        return true;
+	return false;
+}
+
+int anterior( const string aux )
+{
+	for ( int i = 0; i < simb; i++ )
+    if ( oper[i] == aux )
+        return ante[i];
+	return -1;
+}
+
+int main()
+{
+    string post, inf, aux;
+    stack <string> var;
+    stack <double> result;
+    size_t i;
+    char a;
+    cout << "Ingrese la ecuacion aritmetica: "<<endl;
+    getline( cin, inf );
+    cout << endl;
+
+    for ( i = 0; i < inf.size(); i++ )
+    {
+        a = inf[i];
+        aux.clear();
+        aux += a;
+        if(a== ' ' ) continue;
+
+        if(a >= '0' && a <= '9' )
+        {
+            post = post + " " + a;
+            continue;
+        }
+
+        if ( operador( aux ) )
+        {
+            while ( !var.empty() && anterior( var.top() )>= anterior(aux))
+            {
+                post = post + " " + var.top();
+                var.pop();
+            }
+            var.push( aux );
+            continue;
+        }
+
+        if ( aux == "(" )
+        {
+            var.push( aux );
+            continue;
+        }
+
+        if ( aux == ")" )
+        {
+            while ( !var.empty() && var.top() != "(" )
+            {
+                post = post + " " + var.top();
+                var.pop();
+            }
+            if ( !var.empty() )
+                var.pop();
+        }
+    }
+
+    while ( !var.empty() )
+    {
+        post = post + " " + var.top();
+        var.pop();
+    }
+    cout<<"La ecuacion en notacion postfija es: \n"<<post<<endl;
+    return 0;
+}
+
